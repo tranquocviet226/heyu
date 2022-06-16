@@ -1,0 +1,15 @@
+.container {
+    padding: 0 15px;
+    overflow-y: hidden;
+}
+
+.title {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.shippingContainer {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid gray;
+}
