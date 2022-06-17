@@ -3,6 +3,8 @@
   overflow: hidden;
   width: 350px;
   position: relative;
+  border: 1px solid #e7eaec;
+  padding: 10px 0;
 }
 
 .title {
@@ -48,6 +50,10 @@
   top: 50px;
   left: 0;
   right: 0;
+  overflow-y: auto;
+  height: 500px;
+  background-color: #FFF;
+  z-index: 9;
 }
 
 .shippingContainer {
@@ -98,11 +104,13 @@
   border-radius: 10px;
   text-align: center;
   background-color: #ed5565;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .location {
   overflow-y: auto;
-  margin-bottom: 75px;
+  margin-bottom: 100px;
   padding-bottom: 10px;
   height: 500px;
 }
@@ -201,6 +209,15 @@
   font-style: italic;
 }
 
+.shipFeeContainer {
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFF
+}
 .shipFee {
   display: flex;
   justify-content: space-between;
@@ -213,4 +230,7 @@
   border-radius: 4px;
   padding: 6px 4px;
   width: 100%;
+}
+.btnNext {
+  margin: 10px;
 }
