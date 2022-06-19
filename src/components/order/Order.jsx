@@ -6,16 +6,13 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { usePlacesWidget } from "react-google-autocomplete";
 import styles from "../../../styles/Order.module.css";
-import { getDeliveryCartType } from "../../services/order";
+import { estimateCostService, getDeliveryCartType } from "../../services/order";
 import IconBank from "./assets/icon_bank.png";
 import IconCash from "./assets/icon_cash.png";
 import IconHoaToc from "./assets/icon_hoa_toc.png";
-import IconHoaTocFood from "./assets/icon_hoa_toc_food.png";
 import IconIdCard from "./assets/icon_id_card.png";
 import IconMapDetail from "./assets/icon_map_detail.png";
-import IconNhanh from "./assets/icon_nhanh.png";
 import IconTelephone from "./assets/icon_telephone.png";
-import IconTietKiem from "./assets/icon_tiet_kiem.png";
 
 const GOOGLE_MAPS_API = "AIzaSyCYV4Or3XIHIGjQesLmKCvoFLK-w8gp-rE";
 const mapOptions = {};
@@ -132,6 +129,30 @@ const Order = () => {
     };
     getDelivery();
   }, [deliveryInfo]);
+
+  useEffect(() => {
+    const estCost = async () => {
+      const data = {
+        pickup: {
+          geo: deliveryInfo.pickup.geo,
+          city: deliveryInfo.pickup.address
+        },
+        pickupTime: "Now",
+        recipients: [
+          {
+            order: 1,
+            city: deliveryInfo.recipients.address,
+            geo: deliveryInfo.recipients.geo
+          },
+        ],
+        vehicleType: currentShipping,
+        menuId: "60e2b8e72c9e27256ef63ec7"
+      }
+      const response = await estimateCostService(data)
+    }
+
+    estCost()
+  }, [deliveryInfo])
 
   useEffect(() => {
     function handleClickOutside(event) {
