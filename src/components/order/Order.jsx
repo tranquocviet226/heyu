@@ -13,6 +13,7 @@ import IconHoaToc from "./assets/icon_hoa_toc.png";
 import IconIdCard from "./assets/icon_id_card.png";
 import IconMapDetail from "./assets/icon_map_detail.png";
 import IconTelephone from "./assets/icon_telephone.png";
+import RecipientItem from "./components/RecipientItem";
 
 const GOOGLE_MAPS_API = "AIzaSyCYV4Or3XIHIGjQesLmKCvoFLK-w8gp-rE";
 const mapOptions = {};
@@ -54,7 +55,7 @@ const Order = () => {
   const [shippingMethod, setShippingMethod] = useState([]);
   const [currentShipping, setCurrentShipping] = useState();
   const [deliveryInfo, setDeliveryInfo] = useState(deliveryInfoDefault);
-  const [recipientList, setRecipientList] = useState([initRecipient]);
+  const [recipientList, setRecipientList] = useState([]);
 
   const pickupAddress = deliveryInfo.pickup.address;
   const pickupAlley = deliveryInfo.pickup.alley;
@@ -126,8 +127,12 @@ const Order = () => {
   };
 
   const handleAddRecipient = () => {
-    setConfirmRecipient(false)
-    // setRecipientList([...recipientList, initRecipient]);
+    setConfirmRecipient(false);
+  };
+
+  const handleConfirmRecipient = () => {
+    setConfirmRecipient(true);
+    setRecipientList([...recipientList, initRecipient]);
   };
 
   const handleSubmit = () => {
@@ -241,68 +246,53 @@ const Order = () => {
     return (
       <div className={styles.locationContainer}>
         <h3 className={styles.h3Title}>Điểm giao</h3>
-        {confirmRecipient &&
-          recipientList.map((recipient) => (
-            <>
-              <div
-                onClick={() => setConfirmRecipient(false)}
-                className={styles.locationConfirm}
-              >
-                <LocationOnOutlinedIcon style={{ width: 20, height: 20 }} />
-                <div className={styles.locationConfirmContent}>
-                  <strong className="size-m">{recipientAddress}</strong>
-                  <br />
-                  <small>{recipientAlley}</small>
-                  <br />
-                  <small>Lấy hàng: {recipientPhone}</small>
-                </div>
-              </div>
-              <Button onClick={handleAddRecipient}>Thêm điểm giao</Button>
-            </>
-          ))}
-        <div style={{ display: confirmRecipient ? "none" : "block" }}>
-          <div className={styles.inputContainer}>
-            <LocationOnOutlinedIcon style={{ width: 20, height: 20 }} />
-            <input
-              ref={recipientRef}
-              className={styles.input}
-              placeholder="Bạn muốn giao hàng đến đâu?"
-            />
-          </div>
-          <Input
-            value={recipientAlley}
-            onChange={(e) => handleChangeRecipient("alley", e)}
-            icon={IconMapDetail}
-            placeholder="Thêm địa chỉ ngõ, ngách, tầng...(nếu có)"
-          />
-          <div style={{ display: "flex", margin: "-15px 0" }}>
-            <div style={{ marginRight: 30 }}>
-              <Input
-                value={recipientName}
-                onChange={(e) => handleChangeRecipient("name", e)}
-                icon={IconIdCard}
-                placeholder="Tên người nhận"
+        {recipientList.length ? (
+          recipientList.map((recipient, index) => <RecipientItem key={index} />)
+        ) : (
+          <div style={{ display: "block" }}>
+            <div className={styles.inputContainer}>
+              <LocationOnOutlinedIcon style={{ width: 20, height: 20 }} />
+              <input
+                // ref={recipientRef}
+                className={styles.input}
+                placeholder="Bạn muốn giao hàng đến đâu?"
               />
             </div>
             <Input
-              value={recipientPhone}
-              onChange={(e) => handleChangeRecipient("phone", e)}
-              icon={IconTelephone}
-              placeholder="SĐT người nhận"
+              // value={recipientAlley}
+              // onChange={(e) => handleChangeRecipient("alley", e)}
+              icon={IconMapDetail}
+              placeholder="Thêm địa chỉ ngõ, ngách, tầng...(nếu có)"
             />
-          </div>
-          <Input
-            value={recipientCount}
-            onChange={(e) => handleChangeRecipient("count", e)}
-            icon={IconBank}
-            placeholder="Tiền ứng"
-          />
-          <div className={styles.btnContainer}>
-            <div className={styles.btnFlex}>
-              <Button onClick={() => setConfirmRecipient(true)}>Xong</Button>
+            <div style={{ display: "flex", margin: "-15px 0" }}>
+              <div style={{ marginRight: 30 }}>
+                <Input
+                  // value={recipientName}
+                  // onChange={(e) => handleChangeRecipient("name", e)}
+                  icon={IconIdCard}
+                  placeholder="Tên người nhận"
+                />
+              </div>
+              <Input
+                // value={recipientPhone}
+                // onChange={(e) => handleChangeRecipient("phone", e)}
+                icon={IconTelephone}
+                placeholder="SĐT người nhận"
+              />
+            </div>
+            <Input
+              // value={recipientCount}
+              // onChange={(e) => handleChangeRecipient("count", e)}
+              icon={IconBank}
+              placeholder="Tiền ứng"
+            />
+            <div className={styles.btnContainer}>
+              <div className={styles.btnFlex}>
+                <Button onClick={() => handleConfirmRecipient(false)}>Xong</Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     );
   };
