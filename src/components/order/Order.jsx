@@ -37,6 +37,16 @@ const deliveryInfoDefault = {
   menuId: "",
 };
 
+const initRecipient = {
+  id: "",
+  address: "",
+  alley: "",
+  name: "",
+  phone: "",
+  count: "",
+  geo: [],
+};
+
 const Order = () => {
   const [showShipping, setShowShipping] = useState(false);
   const [confirmPickup, setConfirmPickup] = useState(false);
@@ -44,6 +54,7 @@ const Order = () => {
   const [shippingMethod, setShippingMethod] = useState([]);
   const [currentShipping, setCurrentShipping] = useState();
   const [deliveryInfo, setDeliveryInfo] = useState(deliveryInfoDefault);
+  const [recipientList, setRecipientList] = useState([initRecipient]);
 
   const pickupAddress = deliveryInfo.pickup.address;
   const pickupAlley = deliveryInfo.pickup.alley;
@@ -114,6 +125,11 @@ const Order = () => {
     });
   };
 
+  const handleAddRecipient = () => {
+    setConfirmRecipient(false)
+    // setRecipientList([...recipientList, initRecipient]);
+  };
+
   const handleSubmit = () => {
     const submitDelivery = async () => {
       // await submitDeliveryService();
@@ -135,24 +151,24 @@ const Order = () => {
       const data = {
         pickup: {
           geo: deliveryInfo.pickup.geo,
-          city: deliveryInfo.pickup.address
+          city: deliveryInfo.pickup.address,
         },
         pickupTime: "Now",
         recipients: [
           {
             order: 1,
             city: deliveryInfo.recipients.address,
-            geo: deliveryInfo.recipients.geo
+            geo: deliveryInfo.recipients.geo,
           },
         ],
         vehicleType: currentShipping,
-        menuId: "60e2b8e72c9e27256ef63ec7"
-      }
-      const response = await estimateCostService(data)
-    }
+        menuId: "60e2b8e72c9e27256ef63ec7",
+      };
+      const response = await estimateCostService(data);
+    };
 
-    estCost()
-  }, [deliveryInfo])
+    estCost();
+  }, [deliveryInfo, currentShipping]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -225,21 +241,25 @@ const Order = () => {
     return (
       <div className={styles.locationContainer}>
         <h3 className={styles.h3Title}>Điểm giao</h3>
-        {confirmRecipient && (
-          <div
-            onClick={() => setConfirmRecipient(false)}
-            className={styles.locationConfirm}
-          >
-            <LocationOnOutlinedIcon style={{ width: 20, height: 20 }} />
-            <div className={styles.locationConfirmContent}>
-              <strong className="size-m">{recipientAddress}</strong>
-              <br />
-              <small>{recipientAlley}</small>
-              <br />
-              <small>Lấy hàng: {recipientPhone}</small>
-            </div>
-          </div>
-        )}
+        {confirmRecipient &&
+          recipientList.map((recipient) => (
+            <>
+              <div
+                onClick={() => setConfirmRecipient(false)}
+                className={styles.locationConfirm}
+              >
+                <LocationOnOutlinedIcon style={{ width: 20, height: 20 }} />
+                <div className={styles.locationConfirmContent}>
+                  <strong className="size-m">{recipientAddress}</strong>
+                  <br />
+                  <small>{recipientAlley}</small>
+                  <br />
+                  <small>Lấy hàng: {recipientPhone}</small>
+                </div>
+              </div>
+              <Button onClick={handleAddRecipient}>Thêm điểm giao</Button>
+            </>
+          ))}
         <div style={{ display: confirmRecipient ? "none" : "block" }}>
           <div className={styles.inputContainer}>
             <LocationOnOutlinedIcon style={{ width: 20, height: 20 }} />
