@@ -1,6 +1,5 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
-import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -9,11 +8,14 @@ import styles from "../../../styles/Order.module.css";
 import { estimateCostService, getDeliveryCartType } from "../../services/order";
 import IconBank from "./assets/icon_bank.png";
 import IconCash from "./assets/icon_cash.png";
-import IconHoaToc from "./assets/icon_hoa_toc.png";
 import IconIdCard from "./assets/icon_id_card.png";
 import IconMapDetail from "./assets/icon_map_detail.png";
 import IconTelephone from "./assets/icon_telephone.png";
+import ButtonComponent from "./components/Button";
+import InputComponent from "./components/Input";
+import ItemContent from "./components/ItemContent";
 import RecipientItem from "./components/RecipientItem";
+import ShippingItem from "./components/ShippingItem";
 
 const GOOGLE_MAPS_API = "AIzaSyCYV4Or3XIHIGjQesLmKCvoFLK-w8gp-rE";
 const mapOptions = {};
@@ -38,24 +40,25 @@ const deliveryInfoDefault = {
   menuId: "",
 };
 
-const initRecipient = {
-  id: "",
-  address: "",
-  alley: "",
-  name: "",
-  phone: "",
-  count: "",
-  geo: [],
-};
-
 const Order = () => {
+  const initRecipient = {
+    id: Date.now(),
+    done: false,
+    address: "",
+    alley: "",
+    name: "",
+    phone: "",
+    count: "",
+    geo: [],
+  };
+
   const [showShipping, setShowShipping] = useState(false);
   const [confirmPickup, setConfirmPickup] = useState(false);
   const [confirmRecipient, setConfirmRecipient] = useState(false);
   const [shippingMethod, setShippingMethod] = useState([]);
   const [currentShipping, setCurrentShipping] = useState();
   const [deliveryInfo, setDeliveryInfo] = useState(deliveryInfoDefault);
-  const [recipientList, setRecipientList] = useState([]);
+  const [recipientList, setRecipientList] = useState([initRecipient]);
 
   const pickupAddress = deliveryInfo.pickup.address;
   const pickupAlley = deliveryInfo.pickup.alley;
@@ -118,6 +121,15 @@ const Order = () => {
     });
   };
 
+  const handleConfirmPickup = () => {
+    if (
+      pickupAddress.trim() !== "" &&
+      pickupPhone.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)
+    ) {
+      setConfirmPickup(true);
+    }
+  };
+
   const handleChangeRecipient = (field, e) => {
     e.preventDefault();
     setDeliveryInfo({
@@ -127,12 +139,17 @@ const Order = () => {
   };
 
   const handleAddRecipient = () => {
-    setConfirmRecipient(false);
+    const recipient = { ...initRecipient };
+    recipient.id = Date.now();
+    recipient;
+    setRecipientList([...recipientList, recipient]);
   };
 
-  const handleConfirmRecipient = () => {
-    setConfirmRecipient(true);
-    setRecipientList([...recipientList, initRecipient]);
+  const handleChangeStatus = (id, status) => {
+    const newRecipientList = [...recipientList];
+    const itemIdx = newRecipientList.findIndex((item) => item.id === id);
+    newRecipientList[itemIdx].done = status;
+    setRecipientList(newRecipientList);
   };
 
   const handleSubmit = () => {
@@ -186,7 +203,7 @@ const Order = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [shippingRef]);
-
+  console.log("recipientList", recipientList);
   const renderPickup = () => {
     return (
       <div className={styles.locationContainer}>
@@ -206,38 +223,48 @@ const Order = () => {
             </div>
           </div>
         )}
-        <div style={{ display: confirmPickup ? "none" : "block" }}>
-          <div className={styles.inputContainer}>
-            <CalendarTodayOutlinedIcon style={{ width: 20, height: 20 }} />
-            <input
-              ref={pickRef}
-              className={styles.input}
-              placeholder="Nhập địa chỉ lấy hàng"
+        <form>
+          <div style={{ display: confirmPickup ? "none" : "block" }}>
+            <div className={styles.inputContainer}>
+              <CalendarTodayOutlinedIcon style={{ width: 20, height: 20 }} />
+              <input
+                type="text"
+                ref={pickRef}
+                className={styles.input}
+                placeholder="Nhập địa chỉ lấy hàng"
+              />
+            </div>
+            <InputComponent
+              required
+              value={pickupAlley}
+              onChange={(e) => handleChangePickup("alley", e)}
+              icon={IconMapDetail}
+              placeholder="Thêm địa chỉ ngõ, ngách, tầng...(nếu có)"
             />
-          </div>
-          <Input
-            value={pickupAlley}
-            onChange={(e) => handleChangePickup("alley", e)}
-            icon={IconMapDetail}
-            placeholder="Thêm địa chỉ ngõ, ngách, tầng...(nếu có)"
-          />
-          <Input
-            value={pickupPhone}
-            onChange={(e) => handleChangePickup("phone", e)}
-            icon={IconTelephone}
-            placeholder="Nhập số điện thoại người đưa hàng"
-          />
-          <div className={styles.btnContainer}>
-            <div className={styles.btnFlex}>
-              <Button onClick={() => setConfirmPickup(true)}>Xong</Button>
+            <InputComponent
+              required
+              value={pickupPhone}
+              onChange={(e) => handleChangePickup("phone", e)}
+              icon={IconTelephone}
+              placeholder="Nhập số điện thoại người đưa hàng"
+            />
+            <div className={styles.btnContainer}>
+              <div className={styles.btnFlex}>
+                <ButtonComponent onClick={handleConfirmPickup}>
+                  Xong
+                </ButtonComponent>
+              </div>
+              <div className={styles.btnFlex}>
+                <ButtonComponent
+                  onClick={() => setConfirmPickup(true)}
+                  primary={false}
+                >
+                  Hủy
+                </ButtonComponent>
+              </div>
             </div>
-            <div className={styles.btnFlex}>
-              <Button onClick={() => setConfirmPickup(true)} type="outline">
-                Hủy
-              </Button>
-            </div>
           </div>
-        </div>
+        </form>
       </div>
     );
   };
@@ -246,53 +273,20 @@ const Order = () => {
     return (
       <div className={styles.locationContainer}>
         <h3 className={styles.h3Title}>Điểm giao</h3>
-        {recipientList.length ? (
-          recipientList.map((recipient, index) => <RecipientItem key={index} />)
-        ) : (
-          <div style={{ display: "block" }}>
-            <div className={styles.inputContainer}>
-              <LocationOnOutlinedIcon style={{ width: 20, height: 20 }} />
-              <input
-                // ref={recipientRef}
-                className={styles.input}
-                placeholder="Bạn muốn giao hàng đến đâu?"
-              />
-            </div>
-            <Input
-              // value={recipientAlley}
-              // onChange={(e) => handleChangeRecipient("alley", e)}
-              icon={IconMapDetail}
-              placeholder="Thêm địa chỉ ngõ, ngách, tầng...(nếu có)"
-            />
-            <div style={{ display: "flex", margin: "-15px 0" }}>
-              <div style={{ marginRight: 30 }}>
-                <Input
-                  // value={recipientName}
-                  // onChange={(e) => handleChangeRecipient("name", e)}
-                  icon={IconIdCard}
-                  placeholder="Tên người nhận"
-                />
-              </div>
-              <Input
-                // value={recipientPhone}
-                // onChange={(e) => handleChangeRecipient("phone", e)}
-                icon={IconTelephone}
-                placeholder="SĐT người nhận"
-              />
-            </div>
-            <Input
-              // value={recipientCount}
-              // onChange={(e) => handleChangeRecipient("count", e)}
-              icon={IconBank}
-              placeholder="Tiền ứng"
-            />
-            <div className={styles.btnContainer}>
-              <div className={styles.btnFlex}>
-                <Button onClick={() => handleConfirmRecipient(false)}>Xong</Button>
-              </div>
-            </div>
-          </div>
-        )}
+        {recipientList.map((recipient, index) => (
+          <RecipientItem
+            key={index}
+            recipient={recipient}
+            onChangeStatus={(status) =>
+              handleChangeStatus(recipient.id, status)
+            }
+          />
+        ))}
+        {recipientList.filter((re) => re.done).length ? (
+          <ButtonComponent onClick={handleAddRecipient} background="#f8ac59">
+            Thêm điểm giao
+          </ButtonComponent>
+        ) : null}
       </div>
     );
   };
@@ -362,58 +356,7 @@ const Order = () => {
           </div>
         </div>
         <div className={styles.btnNext}>
-          <Button onClick={handleSubmit}>Tiếp tục</Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const Input = ({ value, icon, placeholder, onChange }) => {
-  return (
-    <div className={styles.inputContainer}>
-      <Image src={icon} width={20} height={20} alt="" />
-      <input
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={styles.input}
-      />
-    </div>
-  );
-};
-
-const Button = ({ children, type = "primary", onClick }) => {
-  return (
-    <button onClick={onClick} className={styles[`button-${type}`]}>
-      {children}
-    </button>
-  );
-};
-
-const ShippingItem = ({ shipping, handleClick, active }) => {
-  return (
-    <div onClick={handleClick} className={styles.item}>
-      <ItemContent shipping={shipping} />
-      {active && <DoneOutlinedIcon />}
-    </div>
-  );
-};
-
-const ItemContent = ({ shipping }) => {
-  return (
-    <div className={styles.shippingContainer}>
-      <Image
-        src={IconHoaToc}
-        alt=""
-        className={styles.icon}
-        width={32}
-        height={32}
-      />
-      <div className={styles.itemContainer}>
-        <div className={styles.itemContent}>
-          <strong>{shipping?.vehicleType}</strong>
-          <p className={styles.itemDescription}>{shipping?.vehicleType}</p>
+          <ButtonComponent onClick={handleSubmit}>Tiếp tục</ButtonComponent>
         </div>
       </div>
     </div>
