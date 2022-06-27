@@ -5,15 +5,17 @@ const ButtonComponent = ({
   children,
   background,
   primary = true,
+  disabled = false,
   type = "button",
 }) => {
   const mode = primary ? "button-primary" : "button-outline";
   return (
     <button
+      disabled={disabled}
       type={type}
       onClick={onClick}
       className={styles[mode]}
-      style={{ background }}
+      style={{ background, cursor: disabled ? 'not-allowed' : 'pointer' }}
     >
       {children}
     </button>

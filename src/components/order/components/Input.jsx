@@ -8,20 +8,26 @@ const InputComponent = ({
   placeholder,
   onChange,
   forwardedRef,
+  defaultValue,
+  type = 'text',
   ...props
 }) => {
   return (
-    <div className={styles.inputContainer}>
-      <Image src={icon} width={20} height={20} alt="" />
-      <input
-        ref={forwardedRef}
-        required={required}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={styles.input}
-        {...props}
-      />
+    <div>
+      <div className={styles.inputContainer}>
+        <Image src={icon} width={20} height={20} alt="" />
+        <input
+          ref={forwardedRef}
+          required={required}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={styles.input}
+          type={type}
+          defaultValue={defaultValue}
+          {...props}
+        />
+      </div>
     </div>
   );
 };
