@@ -9,6 +9,7 @@ const InputComponent = ({
   onChange,
   forwardedRef,
   defaultValue,
+  disabled,
   type = 'text',
   ...props
 }) => {
@@ -17,6 +18,7 @@ const InputComponent = ({
       <div className={styles.inputContainer}>
         <Image src={icon} width={20} height={20} alt="" />
         <input
+          disabled={disabled}
           ref={forwardedRef}
           required={required}
           value={value}

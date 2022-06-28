@@ -15,7 +15,7 @@ const ButtonComponent = ({
       type={type}
       onClick={onClick}
       className={styles[mode]}
-      style={{ background, cursor: disabled ? 'not-allowed' : 'pointer' }}
+      style={{ background, cursor: disabled ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
     >
       {children}
     </button>

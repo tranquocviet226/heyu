@@ -10,6 +10,7 @@ import ButtonComponent from "./Button";
 import InputComponent from "./Input";
 import { usePlacesWidget } from "react-google-autocomplete";
 import Image from "next/image";
+import { formatCurrency } from "../services/utils";
 
 const GOOGLE_MAPS_API = "AIzaSyCYV4Or3XIHIGjQesLmKCvoFLK-w8gp-rE";
 
@@ -47,7 +48,7 @@ const RecipientItem = ({ recipient, onSubmitRecipient, onCancelRecipient }) => {
   }, [recipient])
 
   useEffect(() => {
-    setCountFormat(recipientCount.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"))
+    setCountFormat(formatCurrency(recipientCount))
   }, [recipientCount])
 
   const recipientRef = usePlacesWidget({
